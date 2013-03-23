@@ -27,7 +27,7 @@ public class Pferd {
 	/**
 	 * Therapieart des Pferds als enum Typ.
 	 */
-	private Therapieart type;
+	private Therapieart typ;
 	
 	/**
 	 * Das Geburtsdatum des Pferds.
@@ -48,7 +48,7 @@ public class Pferd {
 		this.id = id;
 		this.name = name;
 		this.preis = preis;
-		this.type = type;
+		this.typ = type;
 		this.dat = dat;
 	}
 	
@@ -59,27 +59,35 @@ public class Pferd {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public float getPreis() {
 		return preis;
 	}
+	
 	public void setPreis(float preis) {
 		this.preis = preis;
 	}
-	public Therapieart getType() {
-		return type;
+	
+	public Therapieart getTyp() {
+		return typ;
 	}
-	public void setType(Therapieart type) {
-		this.type = type;
+	
+	public void setTyp(Therapieart typ) {
+		this.typ = typ;
 	}
+	
 	public Date getDat() {
 		return dat;
 	}
+	
 	public void setDat(Date dat) {
 		this.dat = dat;
 	}
