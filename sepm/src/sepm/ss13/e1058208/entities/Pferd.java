@@ -2,12 +2,18 @@ package sepm.ss13.e1058208.entities;
 
 import java.sql.Date;
 
+import org.apache.log4j.Logger;
+
+import sepm.ss13.e1058208.test.TestDBPferdDAO;
+
 /**
  * Kapselt die Werte eines Pferds.
  * 
  * @author Florian Klampfer
  */
 public class Pferd {
+	
+	private static final Logger log = Logger.getLogger(Pferd.class);
 	
 	/**
 	 * Eindeutige id des Pferds (von Datenbank generiert).
@@ -44,7 +50,7 @@ public class Pferd {
 	 * @param type Therapieart des Pferds als enum Typ.
 	 * @param dat Das Geburtsdatum des Pferds.
 	 */
-	public Pferd(int id, String name, int preis, Therapieart type, Date dat) {
+	public Pferd(int id, String name, float preis, Therapieart type, Date dat) {
 		this.id = id;
 		this.name = name;
 		this.preis = preis;
@@ -90,5 +96,20 @@ public class Pferd {
 	
 	public void setDat(Date dat) {
 		this.dat = dat;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		log.debug("equals");
+		if (other == null) return false;
+		if (other == this) return true;
+		if (other.getClass() != this.getClass()) return false;
+		Pferd o = (Pferd)other;
+		return o.getId() == this.getId();
 	}
 }
