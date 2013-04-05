@@ -14,6 +14,7 @@ public interface Service {
 	
 	/**
 	 * Erstellt ein neues Pferd
+	 * 
 	 * @param p Das zu erstellende Pferd
 	 * @throws IllegalArgumentException wenn die Daten ungültig sind.
 	 */
@@ -21,6 +22,7 @@ public interface Service {
 
 	/**
 	 * Bearbeitet ein vorhandenes Pferd.
+	 * 
 	 * @param p Die neuen Daten des Pferds.
 	 * @throws IllegalArgumentException wenn die Daten ungültig sind, oder das Pferd nicht vorhandne ist.
 	 */
@@ -28,6 +30,7 @@ public interface Service {
 	
 	/**
 	 * Markiert ein Pferd als gelöscht.
+	 * 
 	 * @param p Das zu löschende Pferd
 	 * @throws IllegalArgumentException wenn das Pferd nicht vorhandne ist.
 	 */
@@ -35,6 +38,7 @@ public interface Service {
 	
 	/**
 	 * Auflistung aller Pferde.
+	 * 
 	 * @return collection aller Pferde welche nicht gelöscht wurden.
 	 */
 	public Collection<Pferd> listPferds();
@@ -51,7 +55,8 @@ public interface Service {
 	public Collection<Pferd> searchPferds(String nameQuery, float maxPreis, Therapieart typQuery);
 	
 	/**
-	 * Erstellt eine Rechnung
+	 * Erstellt eine Rechnung.
+	 * 
 	 * @param r Eine neue Rechnung welche in die Datenbank eingefügt werden soll.
 	 * @throws IllegalArgumentException wenn die Daten ungültig sind.
 	 */
@@ -59,6 +64,7 @@ public interface Service {
 	
 	/**
 	 * Auflistung aller Rechnungen.
+	 * 
 	 * @return collection aller Rechnungen.
 	 */
 	public Collection<Rechnung> listRechnungs();

@@ -14,6 +14,11 @@ import sepm.ss13.e1058208.entities.Pferd;
 import sepm.ss13.e1058208.entities.Rechnung;
 import sepm.ss13.e1058208.entities.Therapieeinheit;
 
+/**
+ * DAO zur Abfrage von Rechnungen aus der Datenbank.
+ * 
+ * @author Florian Klampfer
+ */
 public class DBRechnungDAO implements RechnungDAO {
 
 	private static final Logger log = Logger.getLogger(DBRechnungDAO.class);
@@ -28,6 +33,11 @@ public class DBRechnungDAO implements RechnungDAO {
 	
 	private PferdDAO pferdDAO;
 	
+	/**
+	 * Erzeugt ein neues DAO zur Abfrage von Rechnungen.
+	 * @param con Verbindung zur Datenbank.
+	 * @throws DAOException wenn ein Datenbankfehler auftritt.
+	 */
 	public DBRechnungDAO(Connection con) throws DAOException {
 		try {
 			pferdDAO = new DBPferdDAO(con);

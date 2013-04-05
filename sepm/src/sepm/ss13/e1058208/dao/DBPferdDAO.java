@@ -12,6 +12,7 @@ import sepm.ss13.e1058208.entities.Pferd;
 import sepm.ss13.e1058208.entities.Therapieart;
 
 /**
+ * DAO zur Abfrage von Pferden aus der Datenbank.
  * 
  * @author Florian Klampfer
  */
@@ -26,6 +27,12 @@ public class DBPferdDAO implements PferdDAO {
 	private PreparedStatement deltStmt;
 	private PreparedStatement getIdStmt;
 
+	/**
+	 * Erzeugt ein neues DAO zur Abfrage von Pferden aus der Datenbank.
+	 * 
+	 * @param con Verbindung zur Datenbank.
+	 * @throws DAOException wenn ein Datenbankfehler auftritt.
+	 */
 	public DBPferdDAO(Connection con) throws DAOException {
 		try {
 			saveStmt = con.prepareStatement("INSERT INTO Pferde VALUES (DEFAULT, ?, ?, ?, ?, FALSE);");
@@ -40,6 +47,12 @@ public class DBPferdDAO implements PferdDAO {
 		}
 	}
 
+	/**
+	 * Speichert ein Pferd und setzt das Feld id auf den von der DB generierten Wert.
+	 * 
+	 * @param p Das Pferd das gespeichert werden soll. Das Feld id wird überschrieben!
+	 * @throws DAOException wenn das Pferd nicht erstellt werden konnte.
+	 */
 	@Override
 	public void create(Pferd p) throws DAOException {
 		try {
@@ -127,5 +140,11 @@ public class DBPferdDAO implements PferdDAO {
 			log.error("delete " + e);
 			throw new DAOException();
 		}
+	}
+
+	@Override
+	public Collection<Pferd> readTop3() throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

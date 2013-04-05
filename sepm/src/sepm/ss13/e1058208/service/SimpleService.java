@@ -33,10 +33,17 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 	
-	private void validatePferd(Pferd p) throws IllegalArgumentException {
+	/**
+	 * Validiert ein Pferd.
+	 * 
+	 * @param p Das zu validierende Pferd
+	 * @throws IllegalArgumentException wenn das Pferd ungültig ist.
+	 */
+	public static void validatePferd(Pferd p) throws IllegalArgumentException {
 		if(p == null) throw new IllegalArgumentException("Horse must not be null");
 		if(p.getName() == null) throw new IllegalArgumentException("Name must not be null");
 		if(p.getDat() == null) throw new IllegalArgumentException("Date must not be null");
@@ -53,6 +60,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 
@@ -65,6 +73,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 
@@ -76,6 +85,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 
@@ -86,7 +96,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new IllegalArgumentException();
+			throw new RuntimeException();
 		}
 	}
 
@@ -116,7 +126,13 @@ public class SimpleService implements Service {
 		return res;
 	}
 	
-	private void validateRechnung(Rechnung r) throws IllegalArgumentException {
+	/**
+	 * Validiert eine Rechnung.
+	 * 
+	 * @param r Zu validierende Rechnung.
+	 * @throws IllegalArgumentException Wenn die Rechnung ungültig ist.
+	 */
+	public static void validateRechnung(Rechnung r) throws IllegalArgumentException {
 		if(r == null) throw new IllegalArgumentException("Rechnung must not be null");
 		if(r.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No invoices from the future allowed");
 		
@@ -134,6 +150,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 
@@ -144,7 +161,7 @@ public class SimpleService implements Service {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new IllegalArgumentException();
+			throw new RuntimeException();
 		}
 	}
 

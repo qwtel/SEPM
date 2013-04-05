@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Erlaubt den Zugriff auf die Datenbankverbindung.
+ * 
  * @author Florian Klampfer
  */
 public class ConnectionSingleton {
@@ -38,6 +39,7 @@ public class ConnectionSingleton {
  
 	/**
 	 * Liefert die Verbindung zur Datenbank.
+	 * 
 	 * @return Die einzige aktive Connection der Datenbank.
 	 */
 	public static Connection getInstance() {
