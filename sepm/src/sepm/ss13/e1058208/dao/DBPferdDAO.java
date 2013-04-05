@@ -32,8 +32,8 @@ public class DBPferdDAO implements PferdDAO {
 			loadStmt = con.prepareStatement("SELECT * FROM Pferde WHERE id = ?;");
 			loadAllStmt = con.prepareStatement("SELECT * FROM Pferde WHERE deleted = FALSE;");
 			getIdStmt = con.prepareStatement("SELECT TOP 1 id FROM Pferde ORDER BY id DESC;");
-			//updtStmt = con.prepareStatement("UPDATE");
-			//deltStmt = con.prepareStatement("UPDATE");
+			updtStmt = con.prepareStatement("UPDATE Pferde SET name = ?, preis = ?, typ = ?, dat = ? WHERE id = ?");
+			deltStmt = con.prepareStatement("UPDATE Pferde SET deleted = TRUE WHERE id = ?");
 		} catch(SQLException e) {
 			log.error("const " + e);
 			throw new RuntimeException();

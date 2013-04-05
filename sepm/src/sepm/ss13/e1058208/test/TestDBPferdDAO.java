@@ -56,8 +56,25 @@ public class TestDBPferdDAO {
 		Pferd expected = new Pferd(0, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
 		dao.create(expected);
 		Pferd actual = dao.read(expected.getId());
-		assertEquals(expected.getId(), actual.getId());
-		assertNotEquals(0, actual.getId());
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void update() {
+		Pferd expected = new Pferd(0, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
+		dao.create(expected);
+		expected.setName("Daddy");
+		dao.update(expected);
+		Pferd actual = dao.read(expected.getId());
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void delete() {
+		Pferd wendy = dao.read(0);
+		dao.delete(wendy);
+		Collection<Pferd> res = dao.readAll();
+		assertFalse(res.contains(wendy));
 	}
 }
 
