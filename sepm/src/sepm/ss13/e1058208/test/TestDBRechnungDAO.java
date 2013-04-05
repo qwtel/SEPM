@@ -8,9 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.junit.*;
 import sepm.ss13.e1058208.dao.ConnectionSingleton;
+import sepm.ss13.e1058208.dao.DAOException;
 import sepm.ss13.e1058208.dao.DBPferdDAO;
 import sepm.ss13.e1058208.dao.DBRechnungDAO;
 import sepm.ss13.e1058208.dao.PferdDAO;
@@ -20,14 +21,14 @@ import sepm.ss13.e1058208.entities.Rechnung;
 import sepm.ss13.e1058208.entities.Therapieeinheit;
 
 public class TestDBRechnungDAO {
-	private static final Logger log = Logger.getLogger(TestDBPferdDAO.class);
+	//private static final Logger log = Logger.getLogger(TestDBRechnungDAO.class);
 	
 	private Connection c;
 	private RechnungDAO dao;
 	private PferdDAO pdao;
 		
 	@Before	
-	public void setup() throws SQLException {
+	public void setup() throws SQLException, DAOException {
 		c = ConnectionSingleton.getInstance();
 		c.setAutoCommit(false);
 		dao = new DBRechnungDAO(c);
@@ -39,13 +40,13 @@ public class TestDBRechnungDAO {
 		c.rollback();
 	}
 	
-	@Test(expected = RuntimeException.class)
-	public void readEmptyThrowsException() {
+	@Test(expected = DAOException.class)
+	public void readEmptyThrowsException() throws DAOException {
 		dao.read(0);
 	}
 	
 	@Test
-	public void create() {
+	public void create() throws DAOException {
 		Rechnung r = new Rechnung();
 		long time = System.currentTimeMillis();
 		r.setDat(new Date(time));
@@ -83,7 +84,7 @@ public class TestDBRechnungDAO {
 	*/
 	
 	@Test
-	public void readAll() {
+	public void readAll() throws DAOException {
 		create();
 		create();
 		create();
@@ -93,7 +94,7 @@ public class TestDBRechnungDAO {
 		Rechnung r = res.get(0);
 		assertEquals(new Date(System.currentTimeMillis()).toString(), r.getDat().toString());
 		for(Therapieeinheit t : r.getEinheiten().values()) {
-			log.info(t);
+			//log.info(t);
 			assertNotNull(t.getId());
 			assertNotNull(t.getPreis());
 			assertNotNull(t.getStunden());

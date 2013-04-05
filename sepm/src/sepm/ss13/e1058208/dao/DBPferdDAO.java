@@ -26,7 +26,7 @@ public class DBPferdDAO implements PferdDAO {
 	private PreparedStatement deltStmt;
 	private PreparedStatement getIdStmt;
 
-	public DBPferdDAO(Connection con) {
+	public DBPferdDAO(Connection con) throws DAOException {
 		try {
 			saveStmt = con.prepareStatement("INSERT INTO Pferde VALUES (DEFAULT, ?, ?, ?, ?, FALSE);");
 			loadStmt = con.prepareStatement("SELECT * FROM Pferde WHERE id = ?;");
@@ -36,12 +36,12 @@ public class DBPferdDAO implements PferdDAO {
 			deltStmt = con.prepareStatement("UPDATE Pferde SET deleted = TRUE WHERE id = ?");
 		} catch(SQLException e) {
 			log.error("const " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 
 	@Override
-	public void create(Pferd p) {
+	public void create(Pferd p) throws DAOException {
 		try {
 			saveStmt.setString(1, p.getName());
 			saveStmt.setFloat(2, p.getPreis());
@@ -50,21 +50,21 @@ public class DBPferdDAO implements PferdDAO {
 			saveStmt.executeUpdate();
 			
 			ResultSet result = getIdStmt.executeQuery();
-			if (!result.next()) throw new RuntimeException();
+			if (!result.next()) throw new DAOException();
 			p.setId(result.getInt("id"));
 			
 		} catch(SQLException e) {
 			log.error("create " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 
 	@Override
-	public Pferd read(int id) {
+	public Pferd read(int id) throws DAOException {
 		try {	
 			loadStmt.setInt(1, id);
 			ResultSet result = loadStmt.executeQuery();
-			if (!result.next()) throw new RuntimeException();
+			if (!result.next()) throw new DAOException();
 			
 			Pferd p = new Pferd();
 			p.setId(result.getInt("id"));
@@ -75,12 +75,12 @@ public class DBPferdDAO implements PferdDAO {
 			return p;
 		} catch(SQLException e) {
 			log.error("read " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 	
 	@Override
-	public Collection<Pferd> readAll() {
+	public Collection<Pferd> readAll() throws DAOException {
 		try {	
 			ResultSet result = loadAllStmt.executeQuery();
 			Collection<Pferd> col = new ArrayList<Pferd>();
@@ -99,12 +99,12 @@ public class DBPferdDAO implements PferdDAO {
 			
 		} catch(SQLException e) {
 			log.error("readAll " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 
 	@Override
-	public void update(Pferd p) {
+	public void update(Pferd p) throws DAOException {
 		try {
 			updtStmt.setString(1, p.getName());
 			updtStmt.setFloat(2, p.getPreis());
@@ -114,18 +114,18 @@ public class DBPferdDAO implements PferdDAO {
 			updtStmt.executeUpdate();
 		} catch(SQLException e) {
 			log.error("update " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 
 	@Override
-	public void delete(Pferd p) {
+	public void delete(Pferd p) throws DAOException {
 		try {
 			deltStmt.setInt(1, p.getId());
 			deltStmt.executeUpdate();
 		} catch(SQLException e) {
 			log.error("delete " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 }

@@ -12,18 +12,19 @@ public class Rechnung {
 	
 	/**
 	 * Eindeutige id der Rechnung (von Datenbank generiert).
+	 * -1 bedeutet dass noch keine id generiert wurde.
 	 */
-	private int id;
+	private int id = -1;
 	
 	/**
 	 * Erstellungszeitpunkt der Rechnung
 	 */
-	private Date dat;
+	private Date dat = null;
 	
 	/**
 	 * Verknüpfung von Pferden zu Therapieeinheiten
 	 */
-	private HashMap<Pferd, Therapieeinheit> einheiten;
+	private HashMap<Pferd, Therapieeinheit> einheiten = null;
 
 	public int getId() {
 		return id;
@@ -47,5 +48,20 @@ public class Rechnung {
 
 	public void setEinheiten(HashMap<Pferd, Therapieeinheit> einheiten) {
 		this.einheiten = einheiten;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "Rechnung-" + id;
+		return s;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) return false;
+		if (other == this) return true;
+		if (other.getClass() != this.getClass()) return false;
+		Rechnung o = (Rechnung)other;
+		return o.getId() == this.getId();
 	}
 }

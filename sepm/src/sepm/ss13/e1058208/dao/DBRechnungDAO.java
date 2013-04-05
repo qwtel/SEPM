@@ -28,7 +28,7 @@ public class DBRechnungDAO implements RechnungDAO {
 	
 	private PferdDAO pferdDAO;
 	
-	public DBRechnungDAO(Connection con) {
+	public DBRechnungDAO(Connection con) throws DAOException {
 		try {
 			pferdDAO = new DBPferdDAO(con);
 			
@@ -41,18 +41,18 @@ public class DBRechnungDAO implements RechnungDAO {
 			getTidStmt = con.prepareStatement("SELECT TOP 1 id FROM Therapieeinheiten ORDER BY id DESC;");
 		} catch(SQLException e) {
 			log.error("const " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 	
 	@Override
-	public void create(Rechnung r) {
+	public void create(Rechnung r) throws DAOException {
 		try {
 			saveStmt.setDate(1, r.getDat());
 			saveStmt.executeUpdate();
 			
 			ResultSet result = getRidStmt.executeQuery();
-			if (!result.next()) throw new RuntimeException();
+			if (!result.next()) throw new DAOException();
 			r.setId(result.getInt("id"));
 			
 			HashMap<Pferd, Therapieeinheit> einheiten = r.getEinheiten();
@@ -65,22 +65,22 @@ public class DBRechnungDAO implements RechnungDAO {
 				saveTPStmt.executeUpdate();
 				
 				ResultSet followUpResult = getTidStmt.executeQuery();
-				if (!followUpResult.next()) throw new RuntimeException();
+				if (!followUpResult.next()) throw new DAOException();
 				t.setId(followUpResult.getInt("id"));
 			}
 			
 		} catch(SQLException e) {
 			log.error("create " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 
 	@Override
-	public Rechnung read(int id) {
+	public Rechnung read(int id) throws DAOException {
 		try {	
 			loadStmt.setInt(1, id);
 			ResultSet result = loadStmt.executeQuery();
-			if (!result.next()) throw new RuntimeException();
+			if (!result.next()) throw new DAOException();
 			
 			Rechnung r = new Rechnung();
 			r.setId(result.getInt("id"));
@@ -93,11 +93,11 @@ public class DBRechnungDAO implements RechnungDAO {
 			
 		} catch(SQLException e) {
 			log.error("read " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 	
-	private HashMap<Pferd, Therapieeinheit> getEinheiten(ResultSet result) throws SQLException {
+	private HashMap<Pferd, Therapieeinheit> getEinheiten(ResultSet result) throws SQLException, DAOException {
 		HashMap<Pferd, Therapieeinheit> einheiten = new HashMap<Pferd, Therapieeinheit>();
 		while (result.next()) {
 			Therapieeinheit t = new Therapieeinheit();
@@ -112,7 +112,7 @@ public class DBRechnungDAO implements RechnungDAO {
 	}
 
 	@Override
-	public Collection<Rechnung> readAll() {
+	public Collection<Rechnung> readAll() throws DAOException {
 		try {
 			ResultSet result = loadAllStmt.executeQuery();
 			Collection<Rechnung> col = new ArrayList<Rechnung>();
@@ -132,7 +132,7 @@ public class DBRechnungDAO implements RechnungDAO {
 			
 		} catch(SQLException e) {
 			log.error("read " + e);
-			throw new RuntimeException();
+			throw new DAOException();
 		}
 	}
 }

@@ -4,8 +4,6 @@ import java.sql.Date;
 
 import org.apache.log4j.Logger;
 
-import sepm.ss13.e1058208.test.TestDBPferdDAO;
-
 /**
  * Kapselt die Werte eines Pferds.
  * 
@@ -17,28 +15,29 @@ public class Pferd {
 	
 	/**
 	 * Eindeutige id des Pferds (von Datenbank generiert).
+	 * -1 bedeutet dass noch keine id generiert wurde.
 	 */
-	private int id;
+	private int id = -1;
 	
 	/**
 	 * Name des Pferds.
 	 */
-	private String name;
+	private String name = null;
 	
 	/**
 	 * Preis pro Stunde.
 	 */
-	private float preis;
+	private float preis = 0.0f;
 	
 	/**
 	 * Therapieart des Pferds als enum Typ.
 	 */
-	private Therapieart typ;
+	private Therapieart typ = null;
 	
 	/**
 	 * Das Geburtsdatum des Pferds.
 	 */
-	private Date dat;
+	private Date dat = null;
 	
 	public Pferd() {}
 	
