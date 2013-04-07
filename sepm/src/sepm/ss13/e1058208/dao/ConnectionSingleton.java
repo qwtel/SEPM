@@ -16,7 +16,6 @@ public class ConnectionSingleton {
 	private static final Logger log = Logger.getLogger(ConnectionSingleton.class);
 	private Connection connection;
 	
-	// Private constructor suppresses generation of a (public) default constructor
 	private ConnectionSingleton() {
 		try {
 			Class.forName("org.hsqldb.jdbc.JDBCDriver");

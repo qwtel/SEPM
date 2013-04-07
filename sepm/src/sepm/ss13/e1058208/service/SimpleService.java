@@ -25,15 +25,13 @@ public class SimpleService implements Service {
 	private PferdDAO pdao;
 	private RechnungDAO rdao;
 	
-	public SimpleService() {
+	public SimpleService() throws ServiceException {
 		c = ConnectionSingleton.getInstance();
 		try {
 			pdao = new DBPferdDAO(c);
 			rdao = new DBRechnungDAO(c);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 	
@@ -48,61 +46,53 @@ public class SimpleService implements Service {
 		if(p.getName() == null) throw new IllegalArgumentException("Name must not be null");
 		if(p.getDat() == null) throw new IllegalArgumentException("Date must not be null");
 		if(p.getTyp() == null) throw new IllegalArgumentException("Type must not be null");
-		//if(p.getPreis() < 0.0f) throw new IllegalArgumentException("Preis darf nicht negativ sein");
+		if(p.getPreis() < 0.0f) throw new IllegalArgumentException("Preis darf nicht negativ sein");
 		if(p.getName().length() > 30) throw new IllegalArgumentException("Name is too long");
 		if(p.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No horses from the future allowed");
 	}
 
 	@Override
-	public void createPferd(Pferd p) throws IllegalArgumentException {
+	public void createPferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		validatePferd(p);
 		try {
 			pdao.create(p);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public void editPferd(Pferd p) throws IllegalArgumentException {
+	public void editPferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		validatePferd(p);
 		if(p.getId() == -1) throw new IllegalArgumentException("Horse id must be specified");
 		try {
 			pdao.update(p);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public void deletePferd(Pferd p) throws IllegalArgumentException {
+	public void deletePferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		if(p.getId() == -1) throw new IllegalArgumentException("Horse id must be specified");
 		try {
 			pdao.delete(p);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public Collection<Pferd> listPferds() {
+	public Collection<Pferd> listPferds() throws ServiceException {
 		try {
 			return pdao.readAll();
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public Collection<Pferd> searchPferds(String nameQuery, float maxPreis, Therapieart typQuery) {
+	public Collection<Pferd> searchPferds(String nameQuery, float maxPreis, Therapieart typQuery) throws ServiceException {
 		Collection<Pferd> pferds = listPferds();
 		Collection<Pferd> res = new ArrayList<Pferd>(pferds);
 		
@@ -144,30 +134,26 @@ public class SimpleService implements Service {
 	}
 	
 	@Override
-	public void createRechnung(Rechnung r) throws IllegalArgumentException {
+	public void createRechnung(Rechnung r) throws IllegalArgumentException, ServiceException {
 		validateRechnung(r);
 		try {
 			rdao.create(r);
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public Collection<Rechnung> listRechnungs() {
+	public Collection<Rechnung> listRechnungs() throws ServiceException {
 		try {
 			return rdao.readAll();
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 
 	@Override
-	public void increaseTop3PferdsBy5Percent() {
+	public void increaseTop3PferdsBy5Percent() throws ServiceException {
 		try {
 			ArrayList<Pferd> top = new ArrayList<Pferd>(pdao.readTop3());
 			for(Pferd p : top) {
@@ -175,9 +161,8 @@ public class SimpleService implements Service {
 				pdao.update(p);
 			}
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new RuntimeException();
+			throw new ServiceException();
 		}
 	}
 

@@ -40,6 +40,11 @@ public class Pferd {
 	private Date dat = new Date(System.currentTimeMillis());
 	
 	/**
+	 * Pfad zu einem Bild des Pferds.
+	 */
+	private String img = null;
+	
+	/**
 	 * Erstellt ein leeres Pferd. Alle Werte (außer id) müssen über die Setter-Methoden gesetzten werden.
 	 */
 	public Pferd() {}
@@ -62,6 +67,24 @@ public class Pferd {
 	
 	/**
 	 * Erstellt ein Pferd mit den gegebenen Werten.
+	 * @param id Eindeutige id des Pferds (von Datenbank generiert).
+	 * @param name Name des Pferds.
+	 * @param preis Preis pro Stunde.
+	 * @param type Therapieart des Pferds als enum Typ.
+	 * @param dat Das Geburtsdatum des Pferds.
+	 * @param img Pfad zu einem Bild des Pferds oder null.
+	 */
+	public Pferd(int id, String name, float preis, Therapieart type, Date dat, String img) {
+		this.id = id;
+		this.name = name;
+		this.preis = preis;
+		this.typ = type;
+		this.dat = dat;
+		this.setImg(img);
+	}
+	
+	/**
+	 * Erstellt ein Pferd mit den gegebenen Werten.
 	 * @param array Ein Array von Werten so wie sie von toArray() erstellt wurden.
 	 */
 	public Pferd(Object[] array) {
@@ -70,6 +93,7 @@ public class Pferd {
 		this.typ = Therapieart.valueOf(array[2].toString());
 		this.preis = (Float)array[3];
 		this.dat = (Date)array[4];
+		this.setImg((String)array[5]);
 	}
 	
 	public int getId() {
@@ -128,6 +152,14 @@ public class Pferd {
 	}
 	
 	public Object[] toArray() {
-		return new Object[] {id, name, typ, preis, dat};
+		return new Object[] {id, name, typ, preis, dat, img};
+	}
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
 	}
 }

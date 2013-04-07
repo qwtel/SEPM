@@ -36,13 +36,13 @@ public class DBPferdDAO implements PferdDAO {
 	 */
 	public DBPferdDAO(Connection con) throws DAOException {
 		try {
-			saveStmt = con.prepareStatement("INSERT INTO Pferde VALUES (DEFAULT, ?, ?, ?, ?, FALSE);");
+			saveStmt = con.prepareStatement("INSERT INTO Pferde VALUES (DEFAULT, ?, ?, ?, ?, FALSE, ?);");
 			loadStmt = con.prepareStatement("SELECT * FROM Pferde WHERE id = ?;");
 			loadAllStmt = con.prepareStatement("SELECT * FROM Pferde WHERE deleted = FALSE;");
 			getIdStmt = con.prepareStatement("SELECT TOP 1 id FROM Pferde ORDER BY id DESC;");
-			updtStmt = con.prepareStatement("UPDATE Pferde SET name = ?, preis = ?, typ = ?, dat = ? WHERE id = ?");
+			updtStmt = con.prepareStatement("UPDATE Pferde SET name = ?, preis = ?, typ = ?, dat = ?, img = ? WHERE id = ?");
 			deltStmt = con.prepareStatement("UPDATE Pferde SET deleted = TRUE WHERE id = ?");
-			loadTop3Stmt = con.prepareStatement("SELECT TOP 3 id, name, preis, typ, dat, sum(stunden) as sumstunden FROM Pferde p right join therapieeinheiten t on p.id = t.pid group by id order by sumstunden desc");
+			loadTop3Stmt = con.prepareStatement("SELECT TOP 3 id, name, preis, typ, dat, img, sum(stunden) as sumstunden FROM Pferde p right join therapieeinheiten t on p.id = t.pid group by id order by sumstunden desc");
 		} catch(SQLException e) {
 			log.error("const " + e);
 			throw new DAOException();
@@ -62,6 +62,7 @@ public class DBPferdDAO implements PferdDAO {
 			saveStmt.setFloat(2, p.getPreis());
 			saveStmt.setString(3, p.getTyp().toString());
 			saveStmt.setDate(4, p.getDat());
+			saveStmt.setString(5, p.getImg());
 			saveStmt.executeUpdate();
 			
 			ResultSet result = getIdStmt.executeQuery();
@@ -87,6 +88,7 @@ public class DBPferdDAO implements PferdDAO {
 			p.setPreis(result.getFloat("preis"));
 			p.setTyp(Therapieart.valueOf(result.getString("typ")));
 			p.setDat(result.getDate("dat"));
+			p.setImg(result.getString("img"));
 			return p;
 		} catch(SQLException e) {
 			log.error("read " + e);
@@ -108,6 +110,7 @@ public class DBPferdDAO implements PferdDAO {
 				p.setPreis(result.getFloat("preis"));
 				p.setTyp(Therapieart.valueOf(result.getString("typ")));
 				p.setDat(result.getDate("dat"));
+				p.setImg(result.getString("img"));
 				col.add(p);
 			}
 			return col;
@@ -125,7 +128,8 @@ public class DBPferdDAO implements PferdDAO {
 			updtStmt.setFloat(2, p.getPreis());
 			updtStmt.setString(3, p.getTyp().toString());
 			updtStmt.setDate(4, p.getDat());
-			updtStmt.setInt(5, p.getId());
+			updtStmt.setString(5, p.getImg());
+			updtStmt.setInt(6, p.getId());
 			updtStmt.executeUpdate();
 		} catch(SQLException e) {
 			log.error("update " + e);

@@ -16,6 +16,7 @@ import sepm.ss13.e1058208.dao.ConnectionSingleton;
 import sepm.ss13.e1058208.entities.Pferd;
 import sepm.ss13.e1058208.entities.Therapieart;
 import sepm.ss13.e1058208.service.Service;
+import sepm.ss13.e1058208.service.ServiceException;
 import sepm.ss13.e1058208.service.SimpleService;
 
 public class TestSimpleService {
@@ -25,7 +26,7 @@ public class TestSimpleService {
 	private Service s;
 		
 	@Before	
-	public void setup() throws SQLException {
+	public void setup() throws SQLException, ServiceException {
 		c = ConnectionSingleton.getInstance();
 		c.setAutoCommit(false);
 		s = new SimpleService();
@@ -37,13 +38,13 @@ public class TestSimpleService {
 	}
 	
 	@Test
-	public void listPferds() {
+	public void listPferds() throws ServiceException {
 		Collection<Pferd> pferds = s.listPferds();
 		assertEquals(4, pferds.size());
 	}
 	
 	@Test
-	public void defaultSearchPferdsEqualsListPferds() {
+	public void defaultSearchPferdsEqualsListPferds() throws ServiceException {
 		Collection<Pferd> pferds = s.listPferds();
 		Collection<Pferd> search = s.searchPferds(null, 0.0f, null);
 		assertEquals(pferds, search);
@@ -52,7 +53,7 @@ public class TestSimpleService {
 	}
 	
 	@Test
-	public void searchForWendy() {
+	public void searchForWendy() throws ServiceException {
 		Collection<Pferd> pferds = s.listPferds();
 		Pferd wendy = (Pferd)pferds.toArray()[0];
 		
@@ -79,20 +80,20 @@ public class TestSimpleService {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void createNullPferd() {
+	public void createNullPferd() throws IllegalArgumentException, ServiceException {
 		Pferd p = null;
 		s.createPferd(p);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void createPferdWithTooLongName() {
+	public void createPferdWithTooLongName() throws IllegalArgumentException, ServiceException {
 		Pferd p = new Pferd();
 		p.setName("123456789012345678901234567890toolong");
 		s.createPferd(p);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void createPferdFromTheFuture() {
+	public void createPferdFromTheFuture() throws IllegalArgumentException, ServiceException {
 		Pferd p = new Pferd();
 		p.setName("Test");
 		p.setDat(new Date(System.currentTimeMillis() + 1000));
@@ -100,13 +101,13 @@ public class TestSimpleService {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void changeNonExistantPferds() {
+	public void changeNonExistantPferds() throws IllegalArgumentException, ServiceException {
 		Pferd wendy = new Pferd();
 		s.editPferd(wendy);
 	}
 	
 	@Test
-	public void inflation() {
+	public void inflation() throws ServiceException {
 		s.increaseTop3PferdsBy5Percent();
 	}
 }
