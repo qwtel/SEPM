@@ -162,6 +162,7 @@ public class DBPferdDAO implements PferdDAO {
 				p.setPreis(result.getFloat("preis"));
 				p.setTyp(Therapieart.valueOf(result.getString("typ")));
 				p.setDat(result.getDate("dat"));
+				p.setImg(result.getString("img"));
 				col.add(p);
 			}
 			return col;

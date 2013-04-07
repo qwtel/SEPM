@@ -3,16 +3,21 @@ package sepm.ss13.e1058208.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.util.HashMap;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
@@ -37,11 +42,10 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(Guido.class);
 	
+	private Guido self = this;
 	private Service s;
 	
 	private JToolBar toolbar;
-	private JScrollPane scrollPane;
-	private JScrollPane rechnungsScrollPane;
 	private JTable pferdTable;
 	private JButton createButton;
 	private JButton deleteButton;
@@ -52,18 +56,32 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	private JTextField searchQueryField = new JTextField(30);
 	private JTextField maxPreisField = new JTextField(4);
 	private JComboBox typQueryField = new JComboBox();
+	private JTable rechnungsTable;
+	private JTable tpeTable;
+	
+	private final JFileChooser fc = new JFileChooser();
 	
 	public Guido() {
 		log.debug("GUI DO!");
 		try {
 			s = new SimpleService();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fehlerMeldung(e.getMessage());
 		}
 		initUI();
 	}
 	
+	protected JComponent makeTextPanel(String text) {
+        JPanel panel = new JPanel(false);
+        JLabel filler = new JLabel(text);
+        filler.setHorizontalAlignment(JLabel.CENTER);
+        panel.setLayout(new GridLayout(1, 1));
+        panel.add(filler);
+        return panel;
+    }
+	
+    private JTabbedPane tabbedPain = new JTabbedPane();
+
 	private void initUI() {
 		this.setTitle("SEPM");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,6 +91,7 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         
         this.setLayout(new BorderLayout());
         
+        /*
         JMenuBar menubar = new JMenuBar();
         
         JMenu file = new JMenu("Ansicht");
@@ -80,39 +99,55 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         
         JMenuItem pferdeMenuItem = new JMenuItem("Pferde");
         JMenuItem rechnungsMenuItem = new JMenuItem("Rechnungen");
+        file.add(pferdeMenuItem);
+        
         pferdeMenuItem.addActionListener(new ShowPferdsActionListener());
         rechnungsMenuItem.addActionListener(new ShowRechnungsActionListener());
-        
-        file.add(pferdeMenuItem);
         file.add(rechnungsMenuItem);
         
         this.setJMenuBar(menubar);
         //ImageIcon icon = new ImageIcon(getClass().getResource("exit.png"));
+        */
         
         toolbar = new JToolBar();
 
         createButton = new JButton("Pferd hinzufügen");
         toolbar.add(createButton);
+        createButton.addActionListener(new CreatePferdActionListener());
+        
         deleteButton = new JButton("Pferd löschen");
         toolbar.add(deleteButton);
+        deleteButton.addActionListener(new DeletePferdActionListener());
+        
         createRechnungButton = new JButton("Rechnung erstellen");
         toolbar.add(createRechnungButton);
+        createRechnungButton.addActionListener(new CreateRechnungActionListener());
+        
         wucherButton = new JButton("Wucher!");
         toolbar.add(wucherButton);
-        
-        createButton.addActionListener(new CreatePferdActionListener());
-        deleteButton.addActionListener(new DeletePferdActionListener());
-        createRechnungButton.addActionListener(new CreateRechnungActionListener());
         wucherButton.addActionListener(new WucherActionListener());
 
-        this.add(toolbar, BorderLayout.NORTH);
+        pferdsPanel.add(toolbar, BorderLayout.NORTH);
+        this.add(tabbedPain, BorderLayout.CENTER);
         
+        initSearchBar();
+        initPferdsUI();
+        initRechnungsUI();
+        
+        //tabbedPain.addTab("Rechnungen", panel2);
+        
+        this.pack();
+	}
+	
+    private JPanel pferdsPanel = new JPanel(new BorderLayout());
+    private JPanel rechnungsPanel = new JPanel(new BorderLayout());
+	
+	private void initSearchBar() {
       	typQueryField.addItem("Alle");
         for(Therapieart t : Therapieart.values()) {
         	typQueryField.addItem(t.toString());
         }
         
-        searchBar.add(new JLabel("Filter:"));
         searchBar.add(new JLabel("Name"));
         searchBar.add(searchQueryField);
         searchBar.add(new JLabel("max. Preis"));
@@ -124,65 +159,81 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         maxPreisField.addKeyListener(this);
         typQueryField.addActionListener(this);
         
-        this.add(searchBar, BorderLayout.SOUTH);
-        
-        initPferdsUI();
-        initRechnungsUI();
-        this.pack();
+        pferdsPanel.add(searchBar, BorderLayout.SOUTH);
 	}
 	
 	private void initPferdsUI() {
 		try {
-			TableModel tableModel = new PferdTableModel(s);
+			TableModel tableModel = new PferdTableModel(this, s);
 	        pferdTable = new JTable(tableModel);
-	        scrollPane = new JScrollPane(pferdTable);
 	        pferdTable.setFillsViewportHeight(true);
+	        pferdTable.setRowHeight(50);
+	        //scrollPane = new JScrollPane(pferdTable);
 	        TableColumn typ = pferdTable.getColumnModel().getColumn(2);
 	        JComboBox comboBox = new JComboBox();
 	        for(Therapieart t : Therapieart.values()) {
 	        	comboBox.addItem(t.toString());
 	        }
-	        typ.setCellEditor(new DefaultCellEditor(comboBox));
+	        DefaultCellEditor dce = new DefaultCellEditor(comboBox);
+	        dce.setClickCountToStart(2);
+	        typ.setCellEditor(dce);
+	        
+	        TableColumn img = pferdTable.getColumnModel().getColumn(5);
+	        img.setCellEditor(new TableFileChooserEditor());
+	        img.setCellRenderer(new ImageRenderer());
 	        
 	        //TableColumn name = pferdTable.getColumnModel().getColumn(1);
 	        //name.setDefaultEditor(Integer.class, new StringEditor(0, 100));
 	        
 	        pferdTable.getModel().addTableModelListener((TableModelListener)tableModel);
+	        pferdsPanel.add(new JScrollPane(pferdTable));
         
-	        this.add(scrollPane);
+	        tabbedPain.addTab("Pferde", new JScrollPane(pferdsPanel));
 	        
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fehlerMeldung(e.getMessage());
 		}
 	}
 	
 	private void initRechnungsUI() {
-        /**
 		try {
-			TableModel tableModel = new PferdTableModel(s);
-	        pferdTable = new JTable(tableModel);
-	        scrollPane = new JScrollPane(pferdTable);
-	        pferdTable.setFillsViewportHeight(true);
-	        TableColumn typ = pferdTable.getColumnModel().getColumn(2);
-	        JComboBox comboBox = new JComboBox();
-	        for(Therapieart t : Therapieart.values()) {
-	        	comboBox.addItem(t.toString());
-	        }
-	        typ.setCellEditor(new DefaultCellEditor(comboBox));
+			TableModel rechnungsTableModel = new RechnungsTableModel(this, s);
+	        rechnungsTable = new JTable(rechnungsTableModel);
+	        rechnungsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
+	        rechnungsTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
+			TableModel tpeTableModel = new TPETableModel(this, s);
+	        tpeTable = new JTable(tpeTableModel);
 	        
-	        //TableColumn name = pferdTable.getColumnModel().getColumn(1);
-	        //name.setDefaultEditor(Integer.class, new StringEditor(0, 100));
+	        getRechnungsTable().setFillsViewportHeight(true);
+	        tpeTable.setFillsViewportHeight(true);
 	        
-	        pferdTable.getModel().addTableModelListener((TableModelListener)tableModel);
+	        rechnungsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+	            @Override
+	            public void valueChanged(ListSelectionEvent e) {
+					try {
+						TPETableModel m = (TPETableModel)tpeTable.getModel();
+						m.fetchData();
+						m.fireTableDataChanged();
+					} catch (ServiceException e1) {
+						fehlerMeldung(e1.getMessage());
+					}
+	            }
+	        });
+	        
+	        
+	        //pferdTable.getModel().addTableModelListener((TableModelListener)tableModel);
         
-	        this.add(scrollPane);
+	        //rechnungsScrollPane.setPreferredSize(new Dimension(300, 100));
+	        
+	        rechnungsPanel.add(new JScrollPane(getRechnungsTable()), BorderLayout.LINE_START);
+	        rechnungsPanel.add(new JScrollPane(tpeTable));
+	        
+	        tabbedPain.addTab("Rechnungen", new JScrollPane(rechnungsPanel));
 	        
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
 	}
 	
     private boolean askPferdDeleted() {
@@ -217,6 +268,19 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
             options,
             options[0]);
     }
+    
+	public void fehlerMeldung(String text) {
+        Object[] options = {"OK"};
+        JOptionPane.showOptionDialog(
+            SwingUtilities.getWindowAncestor(this),
+            text,
+            "Fehler",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.ERROR_MESSAGE,
+            null,
+            options,
+            options[0]);
+	}
 	
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -226,22 +290,6 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         });
     }
     
-	private class ShowPferdsActionListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			scrollPane.setVisible(true);
-			toolbar.setVisible(true);
-		}
-	}
-	
-	private class ShowRechnungsActionListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			scrollPane.setVisible(false);
-			toolbar.setVisible(false);
-		}
-	}
-	
 	private class DeletePferdActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -256,11 +304,9 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 					m.fireTableDataChanged();
 					pferdDeleted();
 				} catch (IllegalArgumentException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					fehlerMeldung(e1.getMessage());
 				} catch (ServiceException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					fehlerMeldung(e1.getMessage());
 				}
 			}
 		}
@@ -276,11 +322,9 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 				m.fetchData();
 				m.fireTableDataChanged();
 			} catch (IllegalArgumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				fehlerMeldung(e1.getMessage());
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				fehlerMeldung(e1.getMessage());
 			}
 		}
 	}
@@ -294,9 +338,9 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 				PferdTableModel m = (PferdTableModel)pferdTable.getModel();
 				
 				for(Integer row : rows) {
-					//log.info(row);
+					log.info(row);
 					Object[] data = m.getRow(row);
-					//log.info(data[0] + " " + data[1]);
+					log.info(data[0] + " " + data[1]);
 					Pferd p = new Pferd(data);
 					Therapieeinheit t = new Therapieeinheit();
 					t.setPreis(p.getPreis());
@@ -309,11 +353,9 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 				s.createRechnung(r);
 				
 			} catch (IllegalArgumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				fehlerMeldung(e1.getMessage());
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				fehlerMeldung(e1.getMessage());
 			}
 		}
 	}
@@ -327,8 +369,7 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 				m.fetchData();
 				m.fireTableDataChanged();
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				fehlerMeldung(e1.getMessage());
 			}
 		}
 	}
@@ -349,7 +390,7 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 			else 
 				m.setMaxPreis(0.0f);
 			
-			// Rest Color
+			// Reset Color
 			maxPreisField.setBackground(new Color(255, 255, 255));	
 			
 			String selection = typQueryField.getSelectedItem().toString();
@@ -361,8 +402,7 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 			m.fetchData();
 			m.fireTableDataChanged();
 		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			fehlerMeldung(e1.getMessage());
 		} catch (NumberFormatException e1) { 
 			maxPreisField.setBackground(new Color(255, 186, 186));	
 			m.setMaxPreis(0.0f);
@@ -381,5 +421,8 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent arg0) {
 		applyFilter();
 	}
-	
+
+	public JTable getRechnungsTable() {
+		return rechnungsTable;
+	}
 }

@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -20,6 +22,7 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(PferdTableModel.class);
 	
+	private Guido parent;
 	private Service s;
 	
 	private String query = null;
@@ -30,7 +33,8 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	private String[] columnNames = {"Id", "Name", "Typ", "Preis", "Datum", "Bild"};
 	//model.addColumn("Icon", new Object[] { new ImageIcon("icon.gif") });
 	
-	public PferdTableModel(Service s) throws ServiceException {
+	public PferdTableModel(Guido parent, Service s) throws ServiceException {
+		this.parent = parent;
 		this.s = s;
 		fetchData();
 	}
@@ -41,9 +45,13 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 		int i = 0;
 		for(Pferd p : col) {
 			Object[] o = p.toArray();
+			
+			String url = "";
 			if(o[5] != null)
-				o[5] = new ImageIcon((String)o[5]);
-			data[i++] = p.toArray();
+				url = o[5].toString();
+			o[5] = new ImageIcon(url);
+			
+			data[i++] = o;
 		}
 	}
 	
@@ -86,7 +94,11 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
     }
 
     public void setValueAt(Object value, int row, int col) {
-        data[row][col] = value;
+    	if(col == 5)
+    		data[row][col] = new ImageIcon(value.toString());
+    	else
+    		data[row][col] = value;
+    	
         fireTableCellUpdated(row, col);
     }
 
@@ -94,15 +106,22 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	public void tableChanged(TableModelEvent e) {
     	if(getRowCount() > 0) {
     		int row = e.getFirstRow();
-	        Pferd p = new Pferd(this.data[row]);
-	        try {
+    		Object[] array = data[row];
+    		
+	        Pferd p = new Pferd();
+			p.setId((Integer)array[0]);
+			p.setName((String)array[1]);
+			p.setTyp(Therapieart.valueOf(array[2].toString()));
+			p.setPreis((Float)array[3]);
+			p.setDat((Date)array[4]);
+			p.setImg((array[5] != null) ? array[5].toString() : null);
+			
+			try {
 				s.editPferd(p);
 			} catch (IllegalArgumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				parent.fehlerMeldung(e1.getMessage());
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				parent.fehlerMeldung(e1.getMessage());
 			}
     	}
 	}

@@ -56,6 +56,10 @@ public class Rechnung {
 		return s;
 	}
 	
+	public Object[] toArray() {
+		return new Object[] {id, dat};
+	}
+	
 	@Override
 	public boolean equals(Object other) {
 		if (other == null) return false;

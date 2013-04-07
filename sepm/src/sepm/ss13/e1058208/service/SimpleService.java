@@ -161,7 +161,6 @@ public class SimpleService implements Service {
 				pdao.update(p);
 			}
 		} catch (DAOException e) {
-			e.printStackTrace();
 			throw new ServiceException();
 		}
 	}

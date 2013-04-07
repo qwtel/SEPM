@@ -93,7 +93,7 @@ public class Pferd {
 		this.typ = Therapieart.valueOf(array[2].toString());
 		this.preis = (Float)array[3];
 		this.dat = (Date)array[4];
-		this.setImg((String)array[5]);
+		this.setImg(array[5].toString());
 	}
 	
 	public int getId() {
