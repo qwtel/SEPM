@@ -105,4 +105,8 @@ public class TestSimpleService {
 		s.editPferd(wendy);
 	}
 	
+	@Test
+	public void inflation() {
+		s.increaseTop3PferdsBy5Percent();
+	}
 }

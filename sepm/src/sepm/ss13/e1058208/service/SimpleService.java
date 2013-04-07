@@ -48,6 +48,7 @@ public class SimpleService implements Service {
 		if(p.getName() == null) throw new IllegalArgumentException("Name must not be null");
 		if(p.getDat() == null) throw new IllegalArgumentException("Date must not be null");
 		if(p.getTyp() == null) throw new IllegalArgumentException("Type must not be null");
+		//if(p.getPreis() < 0.0f) throw new IllegalArgumentException("Preis darf nicht negativ sein");
 		if(p.getName().length() > 30) throw new IllegalArgumentException("Name is too long");
 		if(p.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No horses from the future allowed");
 	}
@@ -167,8 +168,17 @@ public class SimpleService implements Service {
 
 	@Override
 	public void increaseTop3PferdsBy5Percent() {
-		// TODO Auto-generated method stub
-
+		try {
+			ArrayList<Pferd> top = new ArrayList<Pferd>(pdao.readTop3());
+			for(Pferd p : top) {
+				p.setPreis(p.getPreis()*1.05f);
+				pdao.update(p);
+			}
+		} catch (DAOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 	}
 
 }

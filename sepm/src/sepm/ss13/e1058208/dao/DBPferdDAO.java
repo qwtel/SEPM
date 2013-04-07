@@ -26,6 +26,7 @@ public class DBPferdDAO implements PferdDAO {
 	private PreparedStatement updtStmt;
 	private PreparedStatement deltStmt;
 	private PreparedStatement getIdStmt;
+	private PreparedStatement loadTop3Stmt;
 
 	/**
 	 * Erzeugt ein neues DAO zur Abfrage von Pferden aus der Datenbank.
@@ -41,6 +42,7 @@ public class DBPferdDAO implements PferdDAO {
 			getIdStmt = con.prepareStatement("SELECT TOP 1 id FROM Pferde ORDER BY id DESC;");
 			updtStmt = con.prepareStatement("UPDATE Pferde SET name = ?, preis = ?, typ = ?, dat = ? WHERE id = ?");
 			deltStmt = con.prepareStatement("UPDATE Pferde SET deleted = TRUE WHERE id = ?");
+			loadTop3Stmt = con.prepareStatement("SELECT TOP 3 id, name, preis, typ, dat, sum(stunden) as sumstunden FROM Pferde p right join therapieeinheiten t on p.id = t.pid group by id order by sumstunden desc");
 		} catch(SQLException e) {
 			log.error("const " + e);
 			throw new DAOException();
@@ -144,7 +146,25 @@ public class DBPferdDAO implements PferdDAO {
 
 	@Override
 	public Collection<Pferd> readTop3() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ResultSet result = loadTop3Stmt.executeQuery();
+			Collection<Pferd> col = new ArrayList<Pferd>(3);
+			Pferd p;
+			
+			while (result.next()) {
+				p = new Pferd();
+				p.setId(result.getInt("id"));
+				p.setName(result.getString("name"));
+				p.setPreis(result.getFloat("preis"));
+				p.setTyp(Therapieart.valueOf(result.getString("typ")));
+				p.setDat(result.getDate("dat"));
+				col.add(p);
+			}
+			return col;
+			
+		} catch(SQLException e) {
+			log.error("loadTop3 " + e);
+			throw new DAOException();
+		}
 	}
 }
