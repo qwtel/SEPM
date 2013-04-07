@@ -22,7 +22,7 @@ public class Pferd {
 	/**
 	 * Name des Pferds.
 	 */
-	private String name = null;
+	private String name = "";
 	
 	/**
 	 * Preis pro Stunde.
@@ -32,13 +32,16 @@ public class Pferd {
 	/**
 	 * Therapieart des Pferds als enum Typ.
 	 */
-	private Therapieart typ = null;
+	private Therapieart typ = Therapieart.Hippotherapie;
 	
 	/**
 	 * Das Geburtsdatum des Pferds.
 	 */
-	private Date dat = null;
+	private Date dat = new Date(System.currentTimeMillis());
 	
+	/**
+	 * Erstellt ein leeres Pferd. Alle Werte (außer id) müssen über die Setter-Methoden gesetzten werden.
+	 */
 	public Pferd() {}
 	
 	/**
@@ -55,6 +58,18 @@ public class Pferd {
 		this.preis = preis;
 		this.typ = type;
 		this.dat = dat;
+	}
+	
+	/**
+	 * Erstellt ein Pferd mit den gegebenen Werten.
+	 * @param array Ein Array von Werten so wie sie von toArray() erstellt wurden.
+	 */
+	public Pferd(Object[] array) {
+		this.id = (Integer)array[0];
+		this.name = (String)array[1];
+		this.typ = Therapieart.valueOf(array[2].toString());
+		this.preis = (Float)array[3];
+		this.dat = (Date)array[4];
 	}
 	
 	public int getId() {
@@ -110,5 +125,9 @@ public class Pferd {
 		if (other.getClass() != this.getClass()) return false;
 		Pferd o = (Pferd)other;
 		return o.getId() == this.getId();
+	}
+	
+	public Object[] toArray() {
+		return new Object[] {id, name, typ, preis, dat};
 	}
 }
