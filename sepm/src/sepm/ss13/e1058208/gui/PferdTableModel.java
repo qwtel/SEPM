@@ -34,8 +34,7 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	
 	private Collection<Pferd> col;
     private Object[][] data; 
-	private String[] columnNames = {"Id", "Name", "Typ", "Preis", "Datum", "Bild", "Stunden"};
-	//model.addColumn("Icon", new Object[] { new ImageIcon("icon.gif") });
+	private String[] columnNames = {"Id", "Name", "Typ", "Preis", "Erstellungsdatum", "Bild", "Stunden"};
 	
 	private HashMap<Pferd, Integer> einheiten = new HashMap<Pferd, Integer>();
 	

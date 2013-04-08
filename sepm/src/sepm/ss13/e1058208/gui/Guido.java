@@ -85,7 +85,6 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         
         this.setPreferredSize(new Dimension(800, 600));
         this.setLocation(new Point(340, 120));
-        
         this.setLayout(new BorderLayout());
         
         toolbar = new JToolBar();
