@@ -1,19 +1,13 @@
 package sepm.ss13.e1058208.gui;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-
-import org.apache.log4j.Logger;
 
 import sepm.ss13.e1058208.entities.Pferd;
 import sepm.ss13.e1058208.entities.Therapieart;
@@ -23,7 +17,7 @@ import sepm.ss13.e1058208.service.ServiceException;
 
 class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(PferdTableModel.class);
+	//private static final Logger log = Logger.getLogger(PferdTableModel.class);
 	
 	private Guido parent;
 	private Service s;

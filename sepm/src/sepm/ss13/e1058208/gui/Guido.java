@@ -3,7 +3,6 @@ package sepm.ss13.e1058208.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -41,9 +40,11 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	
 	private Service s;
 	
+    private JTabbedPane tabbedPain = new JTabbedPane();
+	
     private JPanel pferdsPanel = new JPanel(new BorderLayout());
     private JPanel rechnungsPanel = new JPanel(new BorderLayout());
-	
+    
 	private JToolBar toolbar;
 	private JTable pferdTable;
 	private JButton createButton;
@@ -68,17 +69,6 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 		initUI();
 	}
 	
-	protected JComponent makeTextPanel(String text) {
-        JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel(text);
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        panel.setLayout(new GridLayout(1, 1));
-        panel.add(filler);
-        return panel;
-    }
-	
-    private JTabbedPane tabbedPain = new JTabbedPane();
-
 	private void initUI() {
 		this.setTitle("SEPM");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -155,9 +145,6 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	        TableColumn img = pferdTable.getColumnModel().getColumn(5);
 	        img.setCellEditor(new TableFileChooserEditor());
 	        img.setCellRenderer(new ImageRenderer());
-	        
-	        //TableColumn name = pferdTable.getColumnModel().getColumn(1);
-	        //name.setDefaultEditor(Integer.class, new StringEditor(0, 100));
 	        
 	        pferdTable.getModel().addTableModelListener((TableModelListener)tableModel);
 	        pferdsPanel.add(new JScrollPane(pferdTable));

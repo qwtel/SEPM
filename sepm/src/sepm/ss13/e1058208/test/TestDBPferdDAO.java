@@ -4,9 +4,7 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;

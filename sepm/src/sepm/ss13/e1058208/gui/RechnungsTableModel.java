@@ -2,10 +2,7 @@ package sepm.ss13.e1058208.gui;
 
 import java.util.Collection;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-
-import org.apache.log4j.Logger;
 
 import sepm.ss13.e1058208.entities.Rechnung;
 import sepm.ss13.e1058208.entities.Therapieeinheit;
@@ -14,15 +11,15 @@ import sepm.ss13.e1058208.service.ServiceException;
 
 public class RechnungsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(RechnungsTableModel.class);
+	//private static final Logger log = Logger.getLogger(RechnungsTableModel.class);
 	
-	private Guido parent;
+	//private Guido parent;
 	private Service s;
 	private String[] columnNames = {"Id", "Erstellungsdatum", "Summe"};
 	private Object[][] data = new Object[0][columnNames.length];
 
 	public RechnungsTableModel(Guido parent, Service s) throws ServiceException {
-		this.parent = parent;
+		//this.parent = parent;
 		this.s = s;
 		fetchData();
 	}

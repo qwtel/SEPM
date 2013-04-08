@@ -2,7 +2,6 @@ package sepm.ss13.e1058208.gui;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.awt.Point;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -12,6 +11,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * ImageREnderer für Image Tabellenzellen.
+ * Skaliert ImageIcons und speichert sie in einer HashMap für merkliche Performanceverbesserung.
+ * Wird zusammen mit TableFileChooseEditor verwendet.
+ * 
+ * @author Florian Klampfer
+ */
 class ImageRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(ImageRenderer.class);

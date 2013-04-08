@@ -1,12 +1,9 @@
 package sepm.ss13.e1058208.gui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 
 import sepm.ss13.e1058208.entities.Rechnung;
 import sepm.ss13.e1058208.entities.Pferd;
@@ -15,7 +12,8 @@ import sepm.ss13.e1058208.service.Service;
 import sepm.ss13.e1058208.service.ServiceException;
 
 public class TPETableModel extends AbstractTableModel {
-
+	private static final long serialVersionUID = 1L;
+	
 	private Guido parent;
 	private Service s;
 	private String[] columnNames = {"Pferd", "Stunden", "Preis"};
