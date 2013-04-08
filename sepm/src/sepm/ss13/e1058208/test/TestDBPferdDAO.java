@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
@@ -28,6 +30,8 @@ public class TestDBPferdDAO {
 		c.setAutoCommit(false);
 		log.debug("before" + c);
 		dao = new DBPferdDAO(c);
+		
+		Testdata.generate(c);
 	}
 			
 	@After
@@ -40,20 +44,42 @@ public class TestDBPferdDAO {
 	public void read() throws DAOException {
 		Pferd p = dao.read(0);
 		assertNotNull(p);
+		assertEquals(0, p.getId());
 		assertEquals("Wendy", p.getName());
+		assertEquals(25.95f, p.getPreis(), 0.01f);
+		assertEquals(Therapieart.HPR, p.getTyp());
+		assertEquals("2008-11-11", p.getDat().toString());
+	}
+	
+	@Test(expected = DAOException.class)
+	public void readNegative() throws DAOException {
+		dao.read(-1);
 	}
 	
 	@Test
-	public void readAll() throws DAOException {
+	public void readAll10() throws DAOException {
 		Collection<Pferd> res = dao.readAll();
-		assertEquals(4, res.size());
+		assertEquals(10, res.size());
+	}
+	
+	@Test
+	public void readAllContainsWendy() throws DAOException {
+		Collection<Pferd> res = dao.readAll();
 		Pferd wendy = dao.read(0);
 		assertTrue(res.contains(wendy));
 	}
 	
 	@Test
 	public void write() throws DAOException {
-		Pferd expected = new Pferd(0, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
+		Pferd expected = new Pferd(-1, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
+		dao.create(expected);
+		Pferd actual = dao.read(expected.getId());
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void writeIgnoresId() throws DAOException {
+		Pferd expected = new Pferd(10, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
 		dao.create(expected);
 		Pferd actual = dao.read(expected.getId());
 		assertEquals(expected, actual);
@@ -61,12 +87,16 @@ public class TestDBPferdDAO {
 	
 	@Test
 	public void update() throws DAOException {
-		Pferd expected = new Pferd(0, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
-		dao.create(expected);
-		expected.setName("Daddy");
+		Pferd expected = new Pferd(0, "Daddy", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
 		dao.update(expected);
 		Pferd actual = dao.read(expected.getId());
 		assertEquals(expected, actual);
+	}
+	
+	@Test(expected = DAOException.class)
+	public void updateNonExistant() throws DAOException {
+		Pferd expected = new Pferd(99, "Bobby", 9.95f, Therapieart.HPV, new Date(System.currentTimeMillis()));
+		dao.update(expected);
 	}
 	
 	@Test
@@ -75,6 +105,12 @@ public class TestDBPferdDAO {
 		dao.delete(wendy);
 		Collection<Pferd> res = dao.readAll();
 		assertFalse(res.contains(wendy));
+	}
+	
+	@Test(expected = DAOException.class)
+	public void deleteNonExistant() throws DAOException {
+		Pferd wendy = dao.read(-1);
+		dao.delete(wendy);
 	}
 }
 

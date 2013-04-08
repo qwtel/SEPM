@@ -7,6 +7,7 @@ import sepm.ss13.e1058208.entities.Rechnung;
 import sepm.ss13.e1058208.entities.Therapieart;
 
 /**
+ * Stellt Methoden für die primären Anwendungsfälle zur Verfügung.
  * 
  * @author Florian Klampfer
  */

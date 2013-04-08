@@ -16,6 +16,7 @@ import sepm.ss13.e1058208.entities.Therapieart;
 import sepm.ss13.e1058208.entities.Therapieeinheit;
 
 /**
+ * Stellt Methoden für die primären Anwendungsfälle zur Verfügung.
  * 
  * @author Florian Klampfer
  */
@@ -25,6 +26,10 @@ public class SimpleService implements Service {
 	private PferdDAO pdao;
 	private RechnungDAO rdao;
 	
+	/**
+	 * Erzeugt einen Service welcher die Methoden für die Anwendungsfälle zur Verfügung stellt.
+	 * @throws ServiceException wenn ein Problem auftritt.
+	 */
 	public SimpleService() throws ServiceException {
 		c = ConnectionSingleton.getInstance();
 		try {
@@ -36,21 +41,12 @@ public class SimpleService implements Service {
 	}
 	
 	/**
-	 * Validiert ein Pferd.
+	 * Erstellt ein neues Pferd
 	 * 
-	 * @param p Das zu validierende Pferd
-	 * @throws IllegalArgumentException wenn das Pferd ungültig ist.
+	 * @param p Das zu erstellende Pferd
+	 * @throws IllegalArgumentException wenn die Daten ungültig sind.
+	 * @throws ServiceException 
 	 */
-	public static void validatePferd(Pferd p) throws IllegalArgumentException {
-		if(p == null) throw new IllegalArgumentException("Horse must not be null");
-		if(p.getName() == null) throw new IllegalArgumentException("Name must not be null");
-		if(p.getDat() == null) throw new IllegalArgumentException("Date must not be null");
-		if(p.getTyp() == null) throw new IllegalArgumentException("Type must not be null");
-		if(p.getPreis() < 0.0f) throw new IllegalArgumentException("Preis darf nicht negativ sein");
-		if(p.getName().length() > 30) throw new IllegalArgumentException("Name is too long");
-		if(p.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No horses from the future allowed");
-	}
-
 	@Override
 	public void createPferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		validatePferd(p);
@@ -61,6 +57,13 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Bearbeitet ein vorhandenes Pferd.
+	 * 
+	 * @param p Die neuen Daten des Pferds.
+	 * @throws IllegalArgumentException wenn die Daten ungültig sind, oder das Pferd nicht vorhandne ist.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public void editPferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		validatePferd(p);
@@ -72,6 +75,13 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Markiert ein Pferd als gelöscht.
+	 * 
+	 * @param p Das zu löschende Pferd
+	 * @throws IllegalArgumentException wenn das Pferd nicht vorhandne ist.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public void deletePferd(Pferd p) throws IllegalArgumentException, ServiceException {
 		if(p.getId() == -1) throw new IllegalArgumentException("Horse id must be specified");
@@ -82,6 +92,12 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Auflistung aller Pferde.
+	 * 
+	 * @return collection aller Pferde welche nicht gelöscht wurden.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public Collection<Pferd> listPferds() throws ServiceException {
 		try {
@@ -91,6 +107,16 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Listet alle Pferde welche Bedingungen erfüllen.
+	 * searchPferds mit default-Werten (null, 0.0f, null) ist identisch mit listPfers (wenn auch nicht performanter).
+	 * 
+	 * @param nameQuery Name oder teilweiser Name des gesuchten Pferds oder null wenn alle Namen gesucht sind.
+	 * @param maxPreis Maximaler Preis pro Therapieeinheit oder 0.0f wenn alle Preise gesucht sind.
+	 * @param typQuery Gewünschte Therapieart oder null wenn alle Therapiearten gesucht sind.
+	 * @return collection aller Pferde welche die Query matchen.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public Collection<Pferd> searchPferds(String nameQuery, float maxPreis, Therapieart typQuery) throws ServiceException {
 		Collection<Pferd> pferds = listPferds();
@@ -118,21 +144,12 @@ public class SimpleService implements Service {
 	}
 	
 	/**
-	 * Validiert eine Rechnung.
+	 * Erstellt eine Rechnung.
 	 * 
-	 * @param r Zu validierende Rechnung.
-	 * @throws IllegalArgumentException Wenn die Rechnung ungültig ist.
+	 * @param r Eine neue Rechnung welche in die Datenbank eingefügt werden soll.
+	 * @throws IllegalArgumentException wenn die Daten ungültig sind.
+	 * @throws ServiceException 
 	 */
-	public static void validateRechnung(Rechnung r) throws IllegalArgumentException {
-		if(r == null) throw new IllegalArgumentException("Rechnung must not be null");
-		if(r.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No invoices from the future allowed");
-		
-		for(Pferd p : r.getEinheiten().keySet()) {
-			Therapieeinheit t = r.getEinheiten().get(p);
-			if(t == null) throw new IllegalArgumentException("Invoice must not be null");
-		}
-	}
-	
 	@Override
 	public void createRechnung(Rechnung r) throws IllegalArgumentException, ServiceException {
 		validateRechnung(r);
@@ -143,6 +160,12 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Auflistung aller Rechnungen.
+	 * 
+	 * @return collection aller Rechnungen.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public Collection<Rechnung> listRechnungs() throws ServiceException {
 		try {
@@ -152,6 +175,10 @@ public class SimpleService implements Service {
 		}
 	}
 
+	/**
+	 * Erhöht den Preis der drei beliebtesten Pferde um fünf Prozent.
+	 * @throws ServiceException 
+	 */
 	@Override
 	public void increaseTop3PferdsBy5Percent() throws ServiceException {
 		try {
@@ -164,5 +191,37 @@ public class SimpleService implements Service {
 			throw new ServiceException();
 		}
 	}
+	
+	/**
+	 * Validiert ein Pferd.
+	 * 
+	 * @param p Das zu validierende Pferd
+	 * @throws IllegalArgumentException wenn das Pferd ungültig ist.
+	 */
+	private static void validatePferd(Pferd p) throws IllegalArgumentException {
+		if(p == null) throw new IllegalArgumentException("Horse must not be null");
+		if(p.getName() == null) throw new IllegalArgumentException("Name must not be null");
+		if(p.getDat() == null) throw new IllegalArgumentException("Date must not be null");
+		if(p.getTyp() == null) throw new IllegalArgumentException("Type must not be null");
+		if(p.getPreis() < 0.0f) throw new IllegalArgumentException("Preis darf nicht negativ sein");
+		if(p.getName().length() > 30) throw new IllegalArgumentException("Name is too long");
+		if(p.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No horses from the future allowed");
+	}
 
+	
+	/**
+	 * Validiert eine Rechnung.
+	 * 
+	 * @param r Zu validierende Rechnung.
+	 * @throws IllegalArgumentException Wenn die Rechnung ungültig ist.
+	 */
+	private static void validateRechnung(Rechnung r) throws IllegalArgumentException {
+		if(r == null) throw new IllegalArgumentException("Rechnung must not be null");
+		if(r.getDat().getTime() > System.currentTimeMillis()) throw new IllegalArgumentException("No invoices from the future allowed");
+		
+		for(Pferd p : r.getEinheiten().keySet()) {
+			Therapieeinheit t = r.getEinheiten().get(p);
+			if(t == null) throw new IllegalArgumentException("Invoice must not be null");
+		}
+	}
 }

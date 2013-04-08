@@ -55,6 +55,12 @@ public class DBRechnungDAO implements RechnungDAO {
 		}
 	}
 	
+	/**
+	 * Speichert eine Rechnung und setzt das Feld id auf den von der DB generierten Wert.
+	 * 
+	 * @param p Die Rechnung welche gespeichert werden soll. Überschreibt das id-Feld.
+	 * @throws DAOException wenn die Rechnung nicht erstellt werden konnte.
+	 */
 	@Override
 	public void create(Rechnung r) throws DAOException {
 		try {
@@ -85,6 +91,13 @@ public class DBRechnungDAO implements RechnungDAO {
 		}
 	}
 
+    /**
+     * Liest eine Rechnung (samt Therapieeinheiten und dazugehöriger Pferde) aus.
+     * 
+     * @param id Die id der gewünschten Rechnung.
+     * @return Die gewünschte Rechnung sofern vorhanden.
+     * @throws DAOException Falls die Rechnung nicht exisitiert.
+     */
 	@Override
 	public Rechnung read(int id) throws DAOException {
 		try {	
@@ -107,20 +120,12 @@ public class DBRechnungDAO implements RechnungDAO {
 		}
 	}
 	
-	private HashMap<Pferd, Therapieeinheit> getEinheiten(ResultSet result) throws SQLException, DAOException {
-		HashMap<Pferd, Therapieeinheit> einheiten = new HashMap<Pferd, Therapieeinheit>();
-		while (result.next()) {
-			Therapieeinheit t = new Therapieeinheit();
-			t.setId(result.getInt("id"));
-			t.setPreis(result.getFloat("preis"));
-			t.setStunden(result.getInt("stunden"));
-			
-			Pferd p = pferdDAO.read(result.getInt("pid"));
-			einheiten.put(p, t);
-		}
-		return einheiten;
-	}
-
+    /**
+     * Eine Auflistung aller Rechnungen.
+     * 
+     * @return Eine Collection mit Rechnungen.
+     * @throws DAOException wenn ein Fehler auftritt.
+     */
 	@Override
 	public Collection<Rechnung> readAll() throws DAOException {
 		try {
@@ -144,5 +149,19 @@ public class DBRechnungDAO implements RechnungDAO {
 			log.error("read " + e);
 			throw new DAOException();
 		}
+	}
+	
+	private HashMap<Pferd, Therapieeinheit> getEinheiten(ResultSet result) throws SQLException, DAOException {
+		HashMap<Pferd, Therapieeinheit> einheiten = new HashMap<Pferd, Therapieeinheit>();
+		while (result.next()) {
+			Therapieeinheit t = new Therapieeinheit();
+			t.setId(result.getInt("id"));
+			t.setPreis(result.getFloat("preis"));
+			t.setStunden(result.getInt("stunden"));
+			
+			Pferd p = pferdDAO.read(result.getInt("pid"));
+			einheiten.put(p, t);
+		}
+		return einheiten;
 	}
 }

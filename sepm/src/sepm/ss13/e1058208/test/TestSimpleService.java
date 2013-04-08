@@ -30,6 +30,8 @@ public class TestSimpleService {
 		c = ConnectionSingleton.getInstance();
 		c.setAutoCommit(false);
 		s = new SimpleService();
+		
+		Testdata.generate(c);
 	}
 			
 	@After
@@ -40,7 +42,7 @@ public class TestSimpleService {
 	@Test
 	public void listPferds() throws ServiceException {
 		Collection<Pferd> pferds = s.listPferds();
-		assertEquals(4, pferds.size());
+		assertEquals(10, pferds.size());
 	}
 	
 	@Test

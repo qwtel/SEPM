@@ -75,6 +75,13 @@ public class DBPferdDAO implements PferdDAO {
 		}
 	}
 
+    /**
+     * Liest ein Pferd (auch wenn es als gelöscht markiert wurde).
+     * 
+     * @param id Id des Pferds das gelesen werden soll.
+     * @return Das gewünschte Pferd.
+     * @throws DAOException wenn das Pferd nicht gelesen werdne kann.
+     */
 	@Override
 	public Pferd read(int id) throws DAOException {
 		try {	
@@ -96,6 +103,12 @@ public class DBPferdDAO implements PferdDAO {
 		}
 	}
 	
+    /**
+     * Liefert alle Pferde, welche nicht gelöscht wurden.
+     * 
+     * @return Alle Pferde, welche nicht gelöscht wurden.
+	 * @throws DAOExceoption wenn die Pferde nicht gelesen werden konnten.
+     */
 	@Override
 	public Collection<Pferd> readAll() throws DAOException {
 		try {	
@@ -121,22 +134,36 @@ public class DBPferdDAO implements PferdDAO {
 		}
 	}
 
+    /**
+     * Überschreibt ein vorhandes Pferd mit neuen Daten.
+     * 
+     * @param p Ein Pferd Objekt mit gesetzter id und den vollständigen neuen Daten.
+     * @throws DAOException wenn das Pferd nicht geschrieben werden konnte.
+     */
 	@Override
 	public void update(Pferd p) throws DAOException {
 		try {
-			updtStmt.setString(1, p.getName());
-			updtStmt.setFloat(2, p.getPreis());
-			updtStmt.setString(3, p.getTyp().toString());
-			updtStmt.setDate(4, p.getDat());
-			updtStmt.setString(5, p.getImg());
-			updtStmt.setInt(6, p.getId());
-			updtStmt.executeUpdate();
+			if(read(p.getId()) != null) {
+				updtStmt.setString(1, p.getName());
+				updtStmt.setFloat(2, p.getPreis());
+				updtStmt.setString(3, p.getTyp().toString());
+				updtStmt.setDate(4, p.getDat());
+				updtStmt.setString(5, p.getImg());
+				updtStmt.setInt(6, p.getId());
+				updtStmt.executeUpdate();
+			}
 		} catch(SQLException e) {
 			log.error("update " + e);
 			throw new DAOException();
 		}
 	}
 
+    /**
+     * Markiert ein Pferd als gelöscht.
+     * 
+     * @param p Ein Pferd mit gesetzter id.
+     * @throws DAOException wenn das Pferd nicht gelöscht werden konnte.
+     */
 	@Override
 	public void delete(Pferd p) throws DAOException {
 		try {
@@ -148,6 +175,12 @@ public class DBPferdDAO implements PferdDAO {
 		}
 	}
 
+	/**
+	 * Liefert die drei meistgebuchten Pferde, welche nicht gelöscht wurden.
+	 * 
+	 * @return Die drei meistgebucthen Pferde.
+	 * @throws DAOExceoption wenn die Pferde nicht gelesen werden konnten.
+	 */
 	@Override
 	public Collection<Pferd> readTop3() throws DAOException {
 		try {
@@ -166,7 +199,6 @@ public class DBPferdDAO implements PferdDAO {
 				col.add(p);
 			}
 			return col;
-			
 		} catch(SQLException e) {
 			log.error("loadTop3 " + e);
 			throw new DAOException();

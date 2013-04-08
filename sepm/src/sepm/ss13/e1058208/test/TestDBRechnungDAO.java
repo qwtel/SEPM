@@ -33,6 +33,8 @@ public class TestDBRechnungDAO {
 		c.setAutoCommit(false);
 		dao = new DBRechnungDAO(c);
 		pdao = new DBPferdDAO(c);
+		
+		Testdata.generate(c);
 	}
 			
 	@After
@@ -42,7 +44,7 @@ public class TestDBRechnungDAO {
 	
 	@Test(expected = DAOException.class)
 	public void readEmptyThrowsException() throws DAOException {
-		dao.read(0);
+		dao.read(10);
 	}
 	
 	@Test
@@ -51,15 +53,15 @@ public class TestDBRechnungDAO {
 		long time = System.currentTimeMillis();
 		r.setDat(new Date(time));
 		
-		Pferd p = pdao.read(0);
+		Pferd p0 = pdao.read(0);
 		Pferd p1 = pdao.read(1);
 		
 		HashMap<Pferd, Therapieeinheit> einheiten = new HashMap<Pferd, Therapieeinheit>();
 		
 		Therapieeinheit t = new Therapieeinheit();
-		t.setPreis(p.getPreis());
+		t.setPreis(p0.getPreis());
 		t.setStunden(3);
-		einheiten.put(p, t);
+		einheiten.put(p0, t);
 		
 		t = new Therapieeinheit();
 		t.setPreis(p1.getPreis());
@@ -69,30 +71,26 @@ public class TestDBRechnungDAO {
 		r.setEinheiten(einheiten);
 		
 		dao.create(r);
-		//assertNotNull(r.getId());
-		//assertEquals("Wendy", p.getName());
+		
+		Rechnung actual = dao.read(r.getId());
+		
+		assertNotNull(r);
+		assertEquals(r, actual);
 	}
 		
-	/*
 	@Test
-	public void read() {
-		create();
+	public void read() throws DAOException {
 		Rechnung r = dao.read(0);
 		assertNotNull(r);
-		//assertEquals("Wendy", p.getName());
+		assertEquals("2008-11-11", r.getDat().toString());
 	}
-	*/
 	
 	@Test
 	public void readAll() throws DAOException {
-		create();
-		create();
-		create();
-		create();
 		ArrayList<Rechnung> res = new ArrayList<Rechnung>(dao.readAll());
-		assertEquals(4, res.size());
+		assertEquals(10, res.size());
 		Rechnung r = res.get(0);
-		assertEquals(new Date(System.currentTimeMillis()).toString(), r.getDat().toString());
+		assertEquals("2008-11-11", r.getDat().toString());
 		for(Therapieeinheit t : r.getEinheiten().values()) {
 			//log.info(t);
 			assertNotNull(t.getId());
