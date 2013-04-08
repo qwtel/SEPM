@@ -83,19 +83,6 @@ public class Pferd {
 		this.setImg(img);
 	}
 	
-	/**
-	 * Erstellt ein Pferd mit den gegebenen Werten.
-	 * @param array Ein Array von Werten so wie sie von toArray() erstellt wurden.
-	 */
-	public Pferd(Object[] array) {
-		this.id = (Integer)array[0];
-		this.name = (String)array[1];
-		this.typ = Therapieart.valueOf(array[2].toString());
-		this.preis = (Float)array[3];
-		this.dat = (Date)array[4];
-		this.setImg(array[5].toString());
-	}
-	
 	public int getId() {
 		return id;
 	}
@@ -135,6 +122,14 @@ public class Pferd {
 	public void setDat(Date dat) {
 		this.dat = dat;
 	}
+	
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
 
 	@Override
 	public String toString() {
@@ -149,14 +144,6 @@ public class Pferd {
 		if (other.getClass() != this.getClass()) return false;
 		Pferd o = (Pferd)other;
 		return o.getId() == this.getId();
-	}
-	
-	public String getImg() {
-		return img;
-	}
-
-	public void setImg(String img) {
-		this.img = img;
 	}
 	
 	@Override

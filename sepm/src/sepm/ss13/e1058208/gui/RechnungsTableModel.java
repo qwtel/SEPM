@@ -42,33 +42,38 @@ public class RechnungsTableModel extends AbstractTableModel {
 		}
 	}
 
+	@Override
     public int getColumnCount() {
         return columnNames.length;
     }
 
+	@Override
     public int getRowCount() {
         return data.length;
     }
 
+	@Override
     public String getColumnName(int col) {
         return columnNames[col];
     }
 
+	@Override
     public Object getValueAt(int row, int col) {
     	if(getRowCount() > 0)
         	return data[row][col];
     	return null;
     }
     
-    public Object[] getRow(int row) {
-    	if(getRowCount() > 0)
-    		return data[row];
-    	return null;
-    }
-
+	@Override
     public Class<? extends Object> getColumnClass(int c) {
         if(getValueAt(0, c) != null)
         	return getValueAt(0, c).getClass();
         return "".getClass();
+    }
+	
+    public Object[] getRow(int row) {
+    	if(getRowCount() > 0)
+    		return data[row];
+    	return null;
     }
 }

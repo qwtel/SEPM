@@ -31,12 +31,15 @@ public class TableFileChooserEditor extends DefaultCellEditor implements TableCe
 	    popup = new JFileChooser();
 	}
 	
+	@Override
 	public Object getCellEditorValue() {
 	    return currentText;
 	}
 	
+	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 	    SwingUtilities.invokeLater(new Runnable() {
+	    	@Override
 			public void run() {
 	        	int returnVal = popup.showOpenDialog(null);
 	        	if(returnVal == JFileChooser.APPROVE_OPTION) {

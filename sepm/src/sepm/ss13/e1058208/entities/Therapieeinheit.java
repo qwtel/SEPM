@@ -17,16 +17,6 @@ public class Therapieeinheit {
 	public Therapieeinheit() { }
 	
 	/**
-	 * Erstellt eine Therapieeinheit mit den gegebenen Werten.
-	 * @param array Ein Array von Werten so wie sie von toArray() erstellt wurden.
-	 */
-	public Therapieeinheit(Object[] array) {
-		this.id = (Integer)array[0];
-		this.stunden = (Integer)array[1];
-		this.preis = (Float)array[2];
-	}
-	
-	/**
 	 * Eindeutige id der Therapieeinheit (von Datenbank generiert).
 	 * -1 bedeutet dass noch keine id generiert wurde.
 	 */
@@ -80,9 +70,8 @@ public class Therapieeinheit {
 		return o.getId() == this.getId();
 	}
 	
-	public Object[] toArray() {
-		return new Object[] {id, stunden, preis };
+	@Override
+	public int hashCode() {
+		return id;
 	}
-
-
 }

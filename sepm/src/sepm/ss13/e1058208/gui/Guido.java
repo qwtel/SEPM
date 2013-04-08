@@ -241,7 +241,8 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
             	(new Guido()).setVisible(true);
             }
         });
@@ -254,12 +255,16 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 				try {
 					int row = pferdTable.getSelectedRow();
 					PferdTableModel m = (PferdTableModel)pferdTable.getModel();
-					Object[] data = m.getRow(row);
-					Pferd p = new Pferd(data);
+					Object[] array = m.getRow(row);
+					
+					Pferd p = new Pferd();
+					p.setId((Integer)array[0]);
 					s.deletePferd(p);
+					
 					m.fetchData();
 					m.fireTableDataChanged();
 					pferdDeleted();
+					
 				} catch (IllegalArgumentException e1) {
 					fehlerMeldung(e1.getMessage());
 				} catch (ServiceException e1) {

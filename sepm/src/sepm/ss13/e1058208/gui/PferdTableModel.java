@@ -66,18 +66,22 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 		}
 	}
 	
-    public int getColumnCount() {
+    @Override
+	public int getColumnCount() {
         return columnNames.length;
     }
 
-    public int getRowCount() {
+    @Override
+	public int getRowCount() {
         return data.length;
     }
 
+    @Override
     public String getColumnName(int col) {
         return columnNames[col];
     }
 
+    @Override
     public Object getValueAt(int row, int col) {
     	if(getRowCount() > 0)
         	return data[row][col];
@@ -90,12 +94,14 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
     	return null;
     }
 
+    @Override
     public Class<? extends Object> getColumnClass(int c) {
         if(getValueAt(0, c) != null)
         	return getValueAt(0, c).getClass();
         return "".getClass();
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) {
         if (col > 0) {
             return true;
@@ -104,6 +110,7 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
         }
     }
 
+    @Override
     public void setValueAt(Object value, int row, int col) {
     	if(col == 5)
     		data[row][col] = new ImageIcon(value.toString());

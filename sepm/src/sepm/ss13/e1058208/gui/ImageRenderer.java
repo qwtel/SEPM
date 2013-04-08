@@ -29,6 +29,7 @@ class ImageRenderer extends DefaultTableCellRenderer {
 	 */
 	private HashMap<Image, ImageIcon> scaled = new HashMap<Image, ImageIcon>();
 	
+	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		ImageIcon imageIcon = (ImageIcon)value;
 		Image image = imageIcon.getImage();

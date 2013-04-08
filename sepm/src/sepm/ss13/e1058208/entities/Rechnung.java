@@ -56,10 +56,6 @@ public class Rechnung {
 		return s;
 	}
 	
-	public Object[] toArray() {
-		return new Object[] {id, dat};
-	}
-	
 	@Override
 	public boolean equals(Object other) {
 		if (other == null) return false;
@@ -67,5 +63,10 @@ public class Rechnung {
 		if (other.getClass() != this.getClass()) return false;
 		Rechnung o = (Rechnung)other;
 		return o.getId() == this.getId();
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
 	}
 }
