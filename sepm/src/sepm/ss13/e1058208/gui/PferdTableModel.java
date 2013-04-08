@@ -1,7 +1,9 @@
 package sepm.ss13.e1058208.gui;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -15,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import sepm.ss13.e1058208.entities.Pferd;
 import sepm.ss13.e1058208.entities.Therapieart;
+import sepm.ss13.e1058208.entities.Therapieeinheit;
 import sepm.ss13.e1058208.service.Service;
 import sepm.ss13.e1058208.service.ServiceException;
 
@@ -29,9 +32,12 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	private float maxPreis = 0.0f;
 	private Therapieart typQuery = null;
 	
+	private Collection<Pferd> col;
     private Object[][] data; 
-	private String[] columnNames = {"Id", "Name", "Typ", "Preis", "Datum", "Bild"};
+	private String[] columnNames = {"Id", "Name", "Typ", "Preis", "Datum", "Bild", "Stunden"};
 	//model.addColumn("Icon", new Object[] { new ImageIcon("icon.gif") });
+	
+	private HashMap<Pferd, Integer> einheiten = new HashMap<Pferd, Integer>();
 	
 	public PferdTableModel(Guido parent, Service s) throws ServiceException {
 		this.parent = parent;
@@ -40,11 +46,23 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 	}
 	
 	public void fetchData() throws ServiceException {
-		Collection<Pferd> col = s.searchPferds(query, maxPreis, typQuery);
+		col = s.searchPferds(query, maxPreis, typQuery);
 		data = new Object[col.size()][columnNames.length];
+		
 		int i = 0;
 		for(Pferd p : col) {
-			Object[] o = p.toArray();
+			if(!einheiten.keySet().contains(p)) {
+				einheiten.put(p, 0);
+			}
+			
+			Object[] o = new Object[7];
+			o[0] = p.getId();
+			o[1] = p.getName();
+			o[2] = p.getTyp();
+			o[3] = p.getPreis();
+			o[4] = p.getDat();
+			o[5] = p.getImg();
+			o[6] = einheiten.get(p);
 			
 			String url = "";
 			if(o[5] != null)
@@ -98,7 +116,7 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
     		data[row][col] = new ImageIcon(value.toString());
     	else
     		data[row][col] = value;
-    	
+    
         fireTableCellUpdated(row, col);
     }
 
@@ -115,6 +133,8 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 			p.setPreis((Float)array[3]);
 			p.setDat((Date)array[4]);
 			p.setImg((array[5] != null) ? array[5].toString() : null);
+			
+			einheiten.put(p, (Integer)array[6]);
 			
 			try {
 				s.editPferd(p);
@@ -148,5 +168,23 @@ class PferdTableModel extends AbstractTableModel implements TableModelListener {
 
 	public void setTypQuery(Therapieart typQuery) {
 		this.typQuery = typQuery;
+	}
+
+	public HashMap<Pferd, Therapieeinheit> getEinheiten() {
+		HashMap<Pferd, Therapieeinheit> res = new HashMap<Pferd, Therapieeinheit>();
+		for(Pferd p : einheiten.keySet()) {
+			int stunden = einheiten.get(p);
+			if(stunden > 0) {
+				Therapieeinheit t = new Therapieeinheit();
+				t.setPreis(p.getPreis());
+				t.setStunden(einheiten.get(p));
+				res.put(p, t);
+			}
+		}
+		return res;
+	}
+
+	public void setEinheiten(HashMap<Pferd, Integer> einheiten) {
+		this.einheiten = einheiten;
 	}
 }

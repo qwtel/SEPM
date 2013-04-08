@@ -25,11 +25,11 @@ public class TPETableModel extends AbstractTableModel {
 	public TPETableModel(Guido parent, Service s) throws ServiceException {
 		this.parent = parent;
 		this.s = s;
-		rechnungs = new ArrayList<Rechnung>(s.listRechnungs());
 		fetchData();
 	}
 
 	public void fetchData() throws ServiceException {
+		rechnungs = new ArrayList<Rechnung>(s.listRechnungs());
 		int row = parent.getRechnungsTable().getSelectedRow();
 		if(row >= 0) {
 			HashMap<Pferd, Therapieeinheit> einheiten = rechnungs.get(row).getEinheiten();

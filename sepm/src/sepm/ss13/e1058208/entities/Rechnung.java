@@ -17,7 +17,7 @@ public class Rechnung {
 	private int id = -1;
 	
 	/**
-	 * Erstellungszeitpunkt der Rechnung
+	 * Erstellungszeitpunkt der Rechnung.
 	 */
 	private Date dat = null;
 	

@@ -10,15 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.util.HashMap;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -42,8 +39,10 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(Guido.class);
 	
-	private Guido self = this;
 	private Service s;
+	
+    private JPanel pferdsPanel = new JPanel(new BorderLayout());
+    private JPanel rechnungsPanel = new JPanel(new BorderLayout());
 	
 	private JToolBar toolbar;
 	private JTable pferdTable;
@@ -53,13 +52,11 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	private JButton wucherButton;
 	
 	private JPanel searchBar = new JPanel();
-	private JTextField searchQueryField = new JTextField(30);
+	private JTextField searchQueryField = new JTextField(10);
 	private JTextField maxPreisField = new JTextField(4);
 	private JComboBox typQueryField = new JComboBox();
 	private JTable rechnungsTable;
 	private JTable tpeTable;
-	
-	private final JFileChooser fc = new JFileChooser();
 	
 	public Guido() {
 		log.debug("GUI DO!");
@@ -91,24 +88,6 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         
         this.setLayout(new BorderLayout());
         
-        /*
-        JMenuBar menubar = new JMenuBar();
-        
-        JMenu file = new JMenu("Ansicht");
-        menubar.add(file);
-        
-        JMenuItem pferdeMenuItem = new JMenuItem("Pferde");
-        JMenuItem rechnungsMenuItem = new JMenuItem("Rechnungen");
-        file.add(pferdeMenuItem);
-        
-        pferdeMenuItem.addActionListener(new ShowPferdsActionListener());
-        rechnungsMenuItem.addActionListener(new ShowRechnungsActionListener());
-        file.add(rechnungsMenuItem);
-        
-        this.setJMenuBar(menubar);
-        //ImageIcon icon = new ImageIcon(getClass().getResource("exit.png"));
-        */
-        
         toolbar = new JToolBar();
 
         createButton = new JButton("Pferd hinzufügen");
@@ -123,7 +102,7 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         toolbar.add(createRechnungButton);
         createRechnungButton.addActionListener(new CreateRechnungActionListener());
         
-        wucherButton = new JButton("Wucher!");
+        wucherButton = new JButton("Beliebte Pferde");
         toolbar.add(wucherButton);
         wucherButton.addActionListener(new WucherActionListener());
 
@@ -134,13 +113,8 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
         initPferdsUI();
         initRechnungsUI();
         
-        //tabbedPain.addTab("Rechnungen", panel2);
-        
         this.pack();
 	}
-	
-    private JPanel pferdsPanel = new JPanel(new BorderLayout());
-    private JPanel rechnungsPanel = new JPanel(new BorderLayout());
 	
 	private void initSearchBar() {
       	typQueryField.addItem("Alle");
@@ -166,9 +140,10 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 		try {
 			TableModel tableModel = new PferdTableModel(this, s);
 	        pferdTable = new JTable(tableModel);
+	        pferdTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
 	        pferdTable.setFillsViewportHeight(true);
 	        pferdTable.setRowHeight(50);
-	        //scrollPane = new JScrollPane(pferdTable);
+	        pferdTable.setAutoCreateRowSorter(true);
 	        TableColumn typ = pferdTable.getColumnModel().getColumn(2);
 	        JComboBox comboBox = new JComboBox();
 	        for(Therapieart t : Therapieart.values()) {
@@ -201,8 +176,10 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	        rechnungsTable = new JTable(rechnungsTableModel);
 	        rechnungsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
 	        rechnungsTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
+	        rechnungsTable.setAutoCreateRowSorter(true);
 			TableModel tpeTableModel = new TPETableModel(this, s);
 	        tpeTable = new JTable(tpeTableModel);
+	        tpeTable.setAutoCreateRowSorter(true);
 	        
 	        getRechnungsTable().setFillsViewportHeight(true);
 	        tpeTable.setFillsViewportHeight(true);
@@ -220,19 +197,13 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 	            }
 	        });
 	        
-	        
-	        //pferdTable.getModel().addTableModelListener((TableModelListener)tableModel);
-        
-	        //rechnungsScrollPane.setPreferredSize(new Dimension(300, 100));
-	        
 	        rechnungsPanel.add(new JScrollPane(getRechnungsTable()), BorderLayout.LINE_START);
 	        rechnungsPanel.add(new JScrollPane(tpeTable));
 	        
 	        tabbedPain.addTab("Rechnungen", new JScrollPane(rechnungsPanel));
 	        
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fehlerMeldung(e.getMessage());
 		}
 	}
 	
@@ -333,24 +304,21 @@ public class Guido extends JFrame implements ActionListener, KeyListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				int rows[] = pferdTable.getSelectedRows();
-				HashMap<Pferd, Therapieeinheit> einheiten = new HashMap<Pferd, Therapieeinheit>();
 				PferdTableModel m = (PferdTableModel)pferdTable.getModel();
-				
-				for(Integer row : rows) {
-					log.info(row);
-					Object[] data = m.getRow(row);
-					log.info(data[0] + " " + data[1]);
-					Pferd p = new Pferd(data);
-					Therapieeinheit t = new Therapieeinheit();
-					t.setPreis(p.getPreis());
-					einheiten.put(p, t);
-				}
+				HashMap<Pferd, Therapieeinheit> einheiten = m.getEinheiten();
 				
 				Rechnung r = new Rechnung();
 				r.setEinheiten(einheiten);
 				r.setDat(new Date(System.currentTimeMillis()));
 				s.createRechnung(r);
+				
+				m.setEinheiten(new HashMap<Pferd, Integer>());
+				m.fetchData();
+				m.fireTableDataChanged();
+				
+				RechnungsTableModel rm = (RechnungsTableModel)rechnungsTable.getModel();
+				rm.fetchData();
+				rm.fireTableDataChanged();
 				
 			} catch (IllegalArgumentException e1) {
 				fehlerMeldung(e1.getMessage());

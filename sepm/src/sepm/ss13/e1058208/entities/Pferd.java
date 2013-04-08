@@ -151,15 +151,16 @@ public class Pferd {
 		return o.getId() == this.getId();
 	}
 	
-	public Object[] toArray() {
-		return new Object[] {id, name, typ, preis, dat, img};
-	}
-
 	public String getImg() {
 		return img;
 	}
 
 	public void setImg(String img) {
 		this.img = img;
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
 	}
 }
